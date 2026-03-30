@@ -27,11 +27,29 @@ const researchDocsRoutes = require("./src/routes/researchDocs");
 const app = express();
 const server = http.createServer(app);
 
-const io = new Server(server, {
-  cors: {
-    origin: "https://stocksence.netlify.app/",
-    methods: ["GET", "POST"],
+// ── CORS allowed origins ───────────────────────────────────────────────────────
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:3000",
+  "https://stocksence.netlify.app",   // ← deployed frontend
+];
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Allow requests with no origin (mobile / curl / Postman)
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error(`CORS blocked: ${origin}`));
+    }
   },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
+
+const io = new Server(server, {
+  cors: corsOptions,
 });
 
 // Make io accessible from routes
@@ -39,8 +57,9 @@ app.set("io", io);
 
 // Middleware
 const compression = require("compression");
-app.use(compression({ level: 6 })); // Compress all HTTP responses for faster data loading
-app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+app.use(compression({ level: 6 }));
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions)); // Handle preflight for all routes
 app.use(express.json());
 
 // Routes
