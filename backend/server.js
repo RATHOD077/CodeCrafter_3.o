@@ -29,9 +29,7 @@ const server = http.createServer(app);
 
 // ── CORS allowed origins ───────────────────────────────────────────────────────
 const allowedOrigins = [
-  "http://localhost:5173",
-  "http://localhost:3000",
-  "https://stocksence.netlify.app",   // ← deployed frontend
+  "https://stocksence.netlify.app"
 ];
 
 const corsOptions = {
@@ -59,7 +57,7 @@ app.set("io", io);
 const compression = require("compression");
 app.use(compression({ level: 6 }));
 app.use(cors(corsOptions));
-app.options("*", cors(corsOptions)); // Handle preflight for all routes
+app.options("/*", cors(corsOptions)); // Handle preflight for all routes (Express 5.x syntax)
 app.use(express.json());
 
 // Routes
