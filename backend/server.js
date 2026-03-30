@@ -57,7 +57,7 @@ app.set("io", io);
 const compression = require("compression");
 app.use(compression({ level: 6 }));
 app.use(cors(corsOptions));
-app.options("/*", cors(corsOptions)); // Handle preflight for all routes (Express 5.x syntax)
+app.options(/.*/, cors(corsOptions)); // Handle preflight for all routes (Express 5.x Regex syntax)
 app.use(express.json());
 
 // Routes
